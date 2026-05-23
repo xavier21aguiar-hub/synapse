@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  font-family: Inter, system-ui, sans-serif;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#0F1115;
+  color:#F5F7FA;
+  min-height:100vh;
+}
+
+@keyframes float{
+
+0%{
+
+transform:
+translateY(0px);
+
+}
+
+50%{
+
+transform:
+translateY(-15px);
+
+}
+
+100%{
+
+transform:
+translateY(0px);
+
+}
+
+}

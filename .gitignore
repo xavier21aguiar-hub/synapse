@@ -1,0 +1,16 @@
+#synapse
+node_modules
+dist
+
+#backend
+venv
+_pycache_
+
+#vscode
+.vscode
+
+#env
+.env
+
+#logs
+*.log
