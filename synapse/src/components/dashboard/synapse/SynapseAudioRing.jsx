@@ -21,19 +21,7 @@ export default function SynapseAudioRing(){
         }
     },[])
     
-    let amp=8
-
-    if(
-        energy>80
-    ){
-        amp=18
-    }
-
-    if(
-        mood==="fatigued"
-    ){
-        amp=4
-    }
+    const amp = theme.audio.amp
     
     const points=[]
     const total=120
@@ -95,10 +83,10 @@ export default function SynapseAudioRing(){
                 points.join(" ")
             }
             fill="none"
-            stroke={ringColor}
+            stroke={theme.audio.stroke}
             strokeWidth="2.5"
             style={{
-                filter: `drop-shadow(0 0 8px ${shadowColor})`
+                filter: `drop-shadow(0 0 8px ${theme.audio.shadow})`
             }}
             />
             

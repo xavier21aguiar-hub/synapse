@@ -18,8 +18,21 @@ export default function synapseCore(){
     })
 
     const [blink, setBlink] = useState(false)
+
+    const [breath, setBreath] = useState(0)
+
+    const [autoEye,setAutoEye] = useState({
+        x:0, y:0
+    })
+    
+    const [headOffset,setHeadOffset] = useState(0)
+    const [eyeTime,setEyeTime] = useState(0)
+
+    const [reaction, setReaction] = useState(false)
     
     const theme= emotionThemes[mood] || emotionThemes.good
+
+    const animation = theme.animation
 
     useEffect(() => {
         const moveEyes = (e) => {
@@ -43,14 +56,86 @@ export default function synapseCore(){
             setBlink(true)
             setTimeout(() => {
                 setBlink(false)
-            }, 150)
-        }, 4000)
+            }, theme.blink.duration)
+        }, theme.blink.interval)
         return() => {
             clearInterval(interval)
         }
+    },[theme])
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            setBreath((prev) => prev+0.5)
+        },16)
+        return() => {
+            clearInterval(id)
+        }
     },[])
 
-    let animation = "animate-pulse"
+    const scale = 1 + Math.sin(breath/theme.breathing.speed)*theme.breathing.amp
+
+    useEffect(()=>{
+        const id = setInterval(() => {
+            setEyeTime(
+                prev => prev+.05
+            )
+        },16)
+        return() => {
+            clearInterval(id)
+        }
+    },[])
+
+    useEffect(() => {
+        let speed=.8
+        let range=3
+        let head=0
+        
+        if(
+            mood==="energized"
+        ){
+            speed=2
+            range=7
+        }
+        
+        if(
+            mood==="stressed"
+        ){
+            speed=3
+            range=5
+        }
+        
+        if(
+            mood==="calm"
+        ){
+            speed=.5
+            range=2
+        }
+        
+        if(
+            mood==="fatigued"
+        ){
+            speed=.4
+            range=2
+            head=8
+        }
+        
+        setAutoEye({
+            x:
+            Math.sin(eyeTime*speed)*range,
+            
+            y:
+            Math.cos(eyeTime*.5)*1.5
+        })
+        setHeadOffset(head)
+    },[eyeTime,mood])
+
+    useEffect(() => {
+        setReaction(true)
+        const id = setTimeout(() => {
+            setReaction(false)
+        }, 6000)
+        return () => clearTimeout(id)
+    },[mood])
 
     return(
         <div className="
@@ -69,14 +154,14 @@ export default function synapseCore(){
                 "translate(130px,-60px)"
                 }}
             >
-                <div className="
+                <div className={`
                 w-12
                 h-12
                 rounded-full
-                bg-cyan-400/10
+                ${theme.cells[0]}
                 blur-xl
                 animate-[float_8s_ease-in-out_infinite]
-                "/>
+                `}/>
 
             </div>
             
@@ -86,14 +171,14 @@ export default function synapseCore(){
                 "translate(-140px,50px)"
             }}
             >
-                <div className="
+                <div className={`
                 w-8
                 h-8
                 rounded-full
-                bg-blue-300/20
+                ${theme.cells[1]}
                 blur-lg
                 animate-[float_10s_ease-in-out_infinite_reverse]
-                "/>
+                `}/>
 
             </div>
 
@@ -111,9 +196,19 @@ export default function synapseCore(){
                 blur-3xl
                 opacity-30
                 ${theme.glow}
-                bg-cyan-400`}/>
+                `}/>
 
-                <div className={`
+                <div 
+                style={{
+                        transform:`
+                        translateY(${headOffset}px)
+                        scale(${
+                            reaction
+                            ? scale+.08
+                            : scale
+                        })`
+                    }}
+                    className={`
                     relative
                     w-36
                     h-36
@@ -122,6 +217,7 @@ export default function synapseCore(){
                     ring-4
                     ${theme.ring}
                     ${theme.glow}
+                    ${reaction ? "brightness-150" : ""}
                     bg-gradient-to-br
                     ${theme.gradient}
                     shadow-2xl
@@ -130,12 +226,65 @@ export default function synapseCore(){
                     duration-1000
                     flex
                     items-center
-                    justify-center`}>
+                    justify-center
+                    `}>
+
+                        {
+                        theme.eyeType==="slash"
                         
-                        <div className="
+                        ?
+                        <div 
+                        style={{
+                            transform:`
+                            translate(
+                            ${autoEye.x}px,
+                            ${autoEye.y}px
+                            )`
+                        }}  
+                            className={`
+                            flex
+                            gap-8
+                            items-center
+                            transition-all
+                            duration-200
+                            ${blink
+                                ? "scale-y-50 translate-y-1"
+                                : ""
+                            }`}>
+                                
+                                <div className="
+                                w-6
+                                h-[3px]
+                                bg-orange-100
+                                rotate-[25deg]
+                                rounded-full
+                                shadow-[0_0_10px_rgba(255,220,180,.8)]
+                                "/>
+                                
+                                <div className="
+                                w-6
+                                h-[3px]
+                                bg-orange-100
+                                -rotate-[25deg]
+                                rounded-full
+                                shadow-[0_0_10px_rgba(255,220,180,.8)]
+                                "/>
+                        </div>
+
+                        :
+                        <div 
+                        style={{
+                            transform:`
+                            translate(
+                            ${autoEye.x}px,
+                            ${autoEye.y}px
+                            )`
+                        }} 
+                        className="
                         flex 
                         gap-8
                         items-center">
+
                             <div className={`
                             transition-all
                             duration-300
@@ -153,7 +302,7 @@ export default function synapseCore(){
                                 height="14"
                                 viewBox="0 0 30 14">
                                     <path 
-                                    d= "M2 12 Q15 -2 28 12"
+                                    d= {theme.eyePath}
                                     stroke={theme.eyeColor}
                                     strokeWidth="4"
                                     fill="none"
@@ -183,7 +332,7 @@ export default function synapseCore(){
                                 height="14"
                                 viewBox="0 0 30 14">
                                     <path 
-                                    d= "M2 12 Q15 -2 28 12"
+                                    d= {theme.eyePath}
                                     stroke={theme.eyeColor}
                                     strokeWidth="4"
                                     fill="none"
@@ -196,6 +345,8 @@ export default function synapseCore(){
                                 </svg>
                             </div>
                         </div>
+
+                        }
 
                     </div>
         </div>

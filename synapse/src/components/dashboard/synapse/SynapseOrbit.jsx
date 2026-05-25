@@ -5,7 +5,8 @@ import { emotionThemes } from "../../../utils/emotionTheme"
 export default function SynapseOrbit(){
     
     const [time,setTime]=useState(0)
-    const {mood,energy} = useDashboard()
+
+    const {mood}=useDashboard()
 
     const theme= emotionThemes[mood] || emotionThemes.good
     
@@ -27,19 +28,19 @@ export default function SynapseOrbit(){
             size:"w-72 h-28",
             rotation:20,
             speed:.4,
-            opacity:ringTheme[0]
+            opacity:theme.orbit[0]
         },
         {
             size:"w-80 h-32",
             rotation:-30,
             speed:.2,
-            opacity:ringTheme[1]
+            opacity:theme.orbit[1]
         },
         {
             size:"w-60 h-24",
             rotation:65,
             speed:.7,
-            opacity:ringTheme[2]
+            opacity:theme.orbit[2]
         }
     ]
     

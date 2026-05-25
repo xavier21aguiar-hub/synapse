@@ -10,24 +10,28 @@ export default function SynapseThoughts(){
 
     const thoughts=[]
 
-    if(energy < 40){
-        thoughts.push("Tu energía bajó un poco...")
-    }
-
-    if(mood === "fatigued"){
+    if(
+        mood==="fatigued"
+    ){
         thoughts.push("Detecté carga mental alta")
     }
-
-    if(habits.study > habits.sleep){
-        thoughts.push("Has estudiado bastante hoy")
+    
+    if(
+        mood==="stressed"
+    ){
+        thoughts.push("Percibo algo de tensión")
     }
-
-    if(habits.sleep > 2){
-        thoughts.push("Tu descanso mejoró")
+    
+    if(
+        mood==="calm"
+    ){
+        thoughts.push("Tu ritmo se siente estable")
     }
-
-    if(thoughts.length===0){
-        thoughts.push("Todo se ve estable ✨")
+    
+    if(
+        mood==="energized"
+    ){
+        thoughts.push("Tu energía está en un gran nivel")
     }
 
     const [current, setCurrent] = useState(0)
@@ -53,12 +57,12 @@ export default function SynapseThoughts(){
         px-5
         py-2
         rounded-full
-        ${thoughtTheme.bg}
+        ${theme.thought.bg}
         border
-        ${thoughtTheme.border}
+        ${theme.thought.border}
         backdrop-blur-xl
         text-sm
-        ${thoughtTheme.text}
+        ${theme.thought.text}
         shadow-lg
         transition-all
         duration-1000`}>

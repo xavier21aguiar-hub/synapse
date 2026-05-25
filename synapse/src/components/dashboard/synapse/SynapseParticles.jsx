@@ -99,7 +99,7 @@ export default function SynapseParticles(){
                 ">
                     <div className={`
                         ${p.size}
-                        ${color}
+                        ${theme.particle}
                         rounded-full
                         shadow-lg
                         relative
@@ -110,7 +110,7 @@ export default function SynapseParticles(){
                             h-[2px]
                             right-1
                             top-1/2
-                            ${trailColor}
+                            ${theme.trail}
                             blur-sm`}/>
                         </div>
                 </div>
