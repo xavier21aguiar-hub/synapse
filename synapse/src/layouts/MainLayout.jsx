@@ -42,7 +42,7 @@ export default function MainLayout(){
             </div>
             
             {/* Main */}
-            <div className="flex-1 p-12">
+            <div className="flex-1 p-4 md:p-6 lg:p-8 xl:p-12 overflow-hidden">
                 <Outlet/>
                 <QuickAddButton/>
                 <FeedbackToast/>

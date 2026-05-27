@@ -11,6 +11,8 @@ import { generateInsight } from "../utils/insightEngine"
 import { detectPattern } from "../utils/patternEngine" 
 import { saveHistory } from "../services/historyService"
 import { predictNext } from "../utils/predictEngine"
+import { rememberConversation, analyzeConversation } from "../utils/conversationMemory"
+import { updateInternalState } from "../utils/internalStateEngine"
 
 const DashboardContext=createContext()
 
@@ -32,6 +34,14 @@ export function DashboardProvider({
         sleep: 0, study: 0, work: 0
     })
 
+    const [internalState, setInternalState]= useState({
+        energy:80,
+        stress:20,
+        focus:50,
+        social:50,
+        curiosity:70
+    })
+
     const [insight, setInsight] = useState("")
 
     const [pattern, setPattern] = useState("")
@@ -40,9 +50,42 @@ export function DashboardProvider({
 
     const [historyRefresh, setHistoryRefresh] = useState(0)
 
+    const [moodHistory, setMoodHistory] = useState([])
+
+    const [conversationHistory,setConversationHistory] = useState(()=>{
+        const saved=
+        localStorage.getItem(
+            "synapse-memory"
+        )
+
+        return saved
+        ? JSON.parse(saved)
+        : []
+    })
+
+    useEffect(()=>{
+        localStorage.setItem(
+            "synapse-memory",
+            JSON.stringify(
+                conversationHistory
+            )
+        )
+    },[conversationHistory])
+
     useEffect(() => {
         loadTasks()
     },[])
+
+    useEffect(()=>{
+        setInternalState(
+            prev=>
+                updateInternalState(
+                    prev,
+                    dashboardPriorities,
+                    habits
+                )
+        )
+    },[dashboardPriorities,habits])
 
     const loadTasks=async()=>{
         
@@ -93,6 +136,10 @@ export function DashboardProvider({
                 finalEnergy
             )
             setMood(detectedMood)
+
+            setMoodHistory(prev => [
+                ...prev.slice(-8), detectedMood
+            ])
 
             setPattern(detectPattern(habitsData))
 
@@ -209,9 +256,14 @@ return(
         mood, setMood,
         energy, setEnergy,
         habits,
+        internalState,
+        conversationHistory,
+        setConversationHistory,
         insight,
         pattern,
-        historyRefresh
+        historyRefresh,
+        moodHistory,
+        setMoodHistory
     }}>
         {children}
     </DashboardContext.Provider>

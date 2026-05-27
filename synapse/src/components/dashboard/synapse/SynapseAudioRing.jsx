@@ -1,12 +1,15 @@
 import { useDashboard } from "../../../context/DashboardContext"
 import { useEffect,useState } from "react"
 import { emotionThemes } from "../../../utils/emotionTheme"
+import useMicrophoneLevel from "../../../hooks/useMicrophoneLevel"
 
-export default function SynapseAudioRing(){
+export default function SynapseAudioRing({speaking}){
     
     const {energy,mood}=useDashboard()
 
     const [time,setTime] =useState(0)
+
+    const micLevel = useMicrophoneLevel()
 
     const theme= emotionThemes[mood] || emotionThemes.good
 
@@ -21,7 +24,22 @@ export default function SynapseAudioRing(){
         }
     },[])
     
-    const amp = theme.audio.amp
+    const voiceBoost=
+    speaking
+    ?
+    10+
+    Math.sin(
+        time*10
+    )*8
+    :
+    0
+
+    const amp=
+    theme.audio.amp
+    +
+    micLevel*.12
+    +
+    voiceBoost
     
     const points=[]
     const total=120

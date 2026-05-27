@@ -5,17 +5,22 @@ import SynapseAudioRing from "./SynapseAudioRing"
 import SynapseOrbit from "./SynapseOrbit"
 import SynapseThoughts from "./SynapseThoughts"
 import { emotionThemes } from "../../../utils/emotionTheme"
+import useSpeech from "../../../hooks/useSpeech"
+import { detectIntent } from "../../../utils/intentEngine"
+import { generateReaction } from "../../../utils/reactionEngine"
+import { rememberConversation } from "../../../utils/conversationMemory"
 
-export default function synapseCore(){
+export default function synapseCore({
+    compact=false
+}){
     const{
         mood, 
         energy,
-        habits
+        habits,
+        setMood,
+        setConversationHistory,
+        setMoodHistory
     } = useDashboard()
-
-    const [eyeOffset, setEyeOffset] = useState({
-        x:0, y:0
-    })
 
     const [blink, setBlink] = useState(false)
 
@@ -29,27 +34,16 @@ export default function synapseCore(){
     const [eyeTime,setEyeTime] = useState(0)
 
     const [reaction, setReaction] = useState(false)
+
+    const [speaking, setSpeaking]= useState(false)
+
+    const [lastIntent,setLastIntent]= useState("")
     
     const theme= emotionThemes[mood] || emotionThemes.good
 
-    const animation = theme.animation
+    const animation= theme.animation
 
-    useEffect(() => {
-        const moveEyes = (e) => {
-            const x=
-            (e.clientX/window.innerWidth -.5)*8
-            const y=
-            (e.clientY/window.innerHeight -.5)*8
-
-            setEyeOffset({
-                x, y
-            })
-        }
-        window.addEventListener("mousemove", moveEyes)
-        return() => {
-            window.removeEventListener("mousemove", moveEyes)
-        }
-    }, [])
+    const transcript= useSpeech()
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -133,18 +127,91 @@ export default function synapseCore(){
         setReaction(true)
         const id = setTimeout(() => {
             setReaction(false)
-        }, 6000)
+        }, 600)
         return () => clearTimeout(id)
     },[mood])
 
+    useEffect(()=>{
+        if(
+            !transcript
+        )
+        return
+
+        const intent=
+        detectIntent(transcript)
+
+        if(
+            transcript.length>12
+        ){
+            setConversationHistory(
+                prev=>{
+                    if(
+                        prev.at(-1)===transcript
+                    ){
+                        return prev
+                    }
+
+                    return rememberConversation(
+                        prev,
+                        transcript
+                    )
+            })
+        }
+        
+
+        if(
+            intent
+            &&
+            intent!==lastIntent
+        ){
+            setMood(intent)
+
+            setMoodHistory(
+                prev=>[
+                    ...prev.slice(-8),
+                    intent
+                ]
+            )
+
+            setLastIntent(intent)
+
+            const reaction= generateReaction(intent)
+            if(
+                reaction
+            ){
+                speechSynthesis.cancel()
+
+                const utterance=
+                new SpeechSynthesisUtterance(
+                    reaction.speech
+                )
+
+                utterance.rate=.95
+                utterance.pitch=1.1
+                utterance.lang="es-MX"
+
+                utterance.onstart=()=>{
+                    setSpeaking(true)
+                }
+                utterance.onend=()=>{
+                    setSpeaking(false)
+                }
+                speechSynthesis.speak(utterance)
+            }
+        }
+    },[transcript,lastIntent,setMood,setConversationHistory])
+
     return(
-        <div className="
+        <div className={`
         relative
         flex
         justify-center
         items-center
+        ${compact
+        ? "w-[620px] h-[620px]"
+        : "w-full h-[760px]"}
         h-72
-        overflow-hidden">
+        overflow-visible`}>
 
             <SynapseParticles/>
 
@@ -184,9 +251,13 @@ export default function synapseCore(){
 
             <SynapseOrbit/>
 
-            <SynapseAudioRing/>
+            <SynapseAudioRing
+            speaking={speaking}/>
 
+            {
+            !compact &&
             <SynapseThoughts/>
+            }
             
             <div className={`
                 absolute
@@ -347,8 +418,57 @@ export default function synapseCore(){
                         </div>
 
                         }
-
                     </div>
+
+                    {
+                    !compact && (
+
+                    <div className="
+                    absolute
+                    bottom-3
+                    max-w-[280px]
+                    px-4
+                    py-2
+                    rounded-2xl
+                    bg-black/40
+                    backdrop-blur-xl
+                    border
+                    border-cyan-300/20
+                    text-cyan-100
+                    text-xs
+                    overflow-hidden
+                    shadow-lg
+                    z-50
+                    transition-all
+                    duration-500
+                    ">
+                        <div className="
+                        flex
+                        items-center
+                        gap-2">
+                            <div className="
+                            w-2
+                            h-2
+                            rounded-full
+                            bg-cyan-300
+                            animate-pulse"/>
+
+                            <span className="
+                            opacity-70">
+                                Escuchando
+                            </span>
+                        </div>
+
+                        <div className="
+                        mt-1
+                        truncate
+                        ">
+                            {transcript
+                            ||
+                            "Di algo..."}
+                        </div>
+                    </div>
+                    )}
         </div>
     )
 }
