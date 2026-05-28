@@ -210,7 +210,6 @@ export default function synapseCore({
         ${compact
         ? "w-[620px] h-[620px]"
         : "w-full h-[760px]"}
-        h-72
         overflow-visible`}>
 
             <SynapseParticles/>

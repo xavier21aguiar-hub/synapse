@@ -4,7 +4,7 @@ export default function StatRing({
     color,
     icon
 }){
-    const radius=32
+    const radius=24
 
     const circumference=
     2*Math.PI*radius
@@ -20,10 +20,10 @@ export default function StatRing({
         flex
         flex-col
         items-center">
-            <svg width="110" height="110">
+            <svg width="82" height="82">
                 <circle 
-                cx="60"
-                cy="60"
+                cx="41"
+                cy="41"
                 r={radius}
                 stroke="rgba(255,255,255,.08)"
                 strokeWidth="10"
@@ -31,11 +31,11 @@ export default function StatRing({
                 />
 
                 <circle
-                cx="60"
-                cy="60"
+                cx="41"
+                cy="41"
                 r={radius}
                 stroke={color}
-                strokeWidth="10"
+                strokeWidth="8"
                 fill="none"
                 strokeLinecap="round"
                 strokeDasharray={
@@ -44,29 +44,37 @@ export default function StatRing({
                 strokeDashoffset={
                     offset
                 }
-                transform="rotate(-90 60 60)"
+                transform="rotate(-90 41 41)"
+                style={{
+                    filter:`drop-shadow(0 0 6px ${color})`
+                }}
                 />
 
                 <text
                 x="50%"
                 y="50%"
                 fill="white"
+                fontSize="12"
+                fontWeight="600"
                 textAnchor="middle"
-                dy=".3em">
+                dy=".35em">
                     {value}%
                 </text>
             </svg>
 
             <div className="
                 mt-1
-                text-cyan-300">
+                text-cyan-300
+                scale-90
+                opacity-80">
                     {icon}
             </div>
 
             <p className="
             mt-2
-            text-sm
-            opacity-80">
+            text-[11px]
+            text-white/50
+            tracking-wide">
                 {label}
             </p>
         </div>
