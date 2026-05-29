@@ -6,6 +6,8 @@ from app.database.base import Base
 from app.models.task_model import Task
 from app.models.history import  History
 from app.routes.history import router as historyRouter
+from app.models.transaction import Transaction
+from app.routes import transaction
 
 app = FastAPI()
 
@@ -29,4 +31,8 @@ app.include_router(
 
 app.include_router(
     historyRouter
+)
+
+app.include_router(
+    transaction.router
 )

@@ -13,6 +13,7 @@ import { saveHistory } from "../services/historyService"
 import { predictNext } from "../utils/predictEngine"
 import { rememberConversation, analyzeConversation } from "../utils/conversationMemory"
 import { updateInternalState } from "../utils/internalStateEngine"
+import { getTransactions } from "../services/financeService"
 
 const DashboardContext=createContext()
 
@@ -51,6 +52,8 @@ export function DashboardProvider({
     const [historyRefresh, setHistoryRefresh] = useState(0)
 
     const [moodHistory, setMoodHistory] = useState([])
+
+    const [transactions,setTransactions] = useState([])
 
     const [conversationHistory,setConversationHistory] = useState(()=>{
         const saved=
@@ -237,6 +240,20 @@ const removePriority=async(id)=>{
     }
 }
 
+const loadTransactions = async() => {
+    try{
+        const data = 
+        await getTransactions()
+
+        setTransactions(data)
+    }catch(error){
+        console.error(error)
+    }
+}
+useEffect(() => {
+    loadTransactions()
+},[])
+
 console.log("PROVIDER VALUE:",{
     priorities: dashboardPriorities,
     habits,
@@ -263,7 +280,9 @@ return(
         pattern,
         historyRefresh,
         moodHistory,
-        setMoodHistory
+        setMoodHistory,
+        transactions,
+        loadTransactions
     }}>
         {children}
     </DashboardContext.Provider>
