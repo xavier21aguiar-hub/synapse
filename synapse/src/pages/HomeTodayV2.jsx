@@ -3,8 +3,11 @@ import { useDashboard } from "../context/DashboardContext"
 import { useMemo } from "react"
 import { Brain,Sparkles,Wallet,Target,Dumbbell,Battery,BrainCircuit,Focus,Heart } from "lucide-react"
 import StatRing from "../components/home/StatRing"
+import { useNavigate } from "react-router-dom"
 
 export default function HomeTodayV2(){
+    
+    const navigate = useNavigate()
 
     const{
             mood,
@@ -77,6 +80,7 @@ export default function HomeTodayV2(){
         {
             title:"Finanzas",
             icon: <Wallet size={40} strokeWidth={2.3} />,
+            route:"/finance",
             content:"Gasto controlado hoy.",
             x:300,
             y:220
@@ -371,6 +375,9 @@ export default function HomeTodayV2(){
                         orbitCards.map((card,index)=>(
                             <div
                             key={index}
+                            onClick={()=>
+                                card.route && navigate(card.route)
+                            }
                             className="
                             absolute
                             top-1/2
@@ -403,7 +410,8 @@ export default function HomeTodayV2(){
                                 duration-500
                                 hover:scale-[1.03]
                                 hover:border-cyan-300/40
-                                hover:bg-white/10">
+                                hover:bg-white/10
+                                hover:shadow-[0_0_60px_rgba(34,211,238,0.25)]">
 
                                     <div className="
                                     text-cyan-300
