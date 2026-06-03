@@ -37,7 +37,7 @@ export default function Tasks(){
                     {" "} de {" "}
                     <span className="
                     text-cyan-300">
-                        {taskSummary.totalDay}
+                        {taskSummary.totalToday}
                     </span>
                     {" "}
                     tareas 
@@ -55,6 +55,7 @@ export default function Tasks(){
                 {/* Synapse Insight */}
                 {/* Burbuja */}
                 <div className="
+                relative
                 w-[300px]
                 rounded-3xl
                 border
@@ -96,52 +97,203 @@ export default function Tasks(){
 
                 {/* Summary Cards */}
                 <div className="
-                mt-8
+                -mt-20
                 grid
                 grid-cols-3
                 gap-6">
-                    Hoy
-                    {taskSummary.completedToday}
-                    /
-                    {taskSummary.totalToday}
-                </div>
-                <div className="
-                mt-8
-                grid
-                grid-cols-3
-                gap-6">
-                    Hoy
-                    Pendientes
-                    {taskSummary.pending}
-                </div>
-                <div className="
-                mt-8
-                grid
-                grid-cols-3
-                gap-6">
-                    Hoy
-                    Alta prioridad
-                    {taskSummary.highPriorityPending}
+
+                    <div className="
+                    rounded-2xl
+                    border
+                    border-cyan-400/10
+                    bg-slate-900/40
+                    p-6
+                    text-center">
+
+                        <p className="text-white/50">
+                            Hoy
+                        </p>
+
+                        <h3 className="
+                        mt-2
+                        text-2xl
+                        font-bold">
+                            {taskSummary.completedToday}
+                            /
+                            {taskSummary.totalToday}
+                        </h3>
+                    </div>
+
+                    <div className="
+                    rounded-2xl
+                    border
+                    border-cyan-400/10
+                    bg-slate-900/40
+                    p-6
+                    text-center">
+
+                        <p className="text-white/50">
+                            Pendientes
+                        </p>
+
+                        <h3 className="
+                        mt-2
+                        text-2xl
+                        font-bold">
+                            {taskSummary.pending}
+                        </h3>
+                    </div>
+
+                    <div className="
+                    rounded-2xl
+                    border
+                    border-cyan-400/10
+                    bg-slate-900/40
+                    p-6
+                    text-center">
+
+                        <p className="text-white/50">
+                            Alta prioridad
+                        </p>
+
+                        <h3 className="
+                        mt-2
+                        text-2xl
+                        font-bold">
+                            {taskSummary.highPriorityPending}
+                        </h3>
+                    </div>
                 </div>
             </div>
     
             {/* Tareas */}
             <div className="
+            mt-16
+            max-w-4xl
+            mx-auto
             rounded-3xl
             border
             border-cyan-400/15
             bg-white/5
             backdrop-blur-xl
-            p-8
-            ml-48">
+            p-8">
     
                 <h2 className="
                 text-2xl
                 font-semibold">
                     Tareas de hoy
                 </h2>
+
+                <div className="
+                mt-8
+                space-y-4">
+                    {
+                        priorities.map(task => (
+                            <div
+                            key={task.id}
+                            className="
+                            flex
+                            items-center
+                            justify-between
+                            rounded-2xl
+                            border
+                            border-cyan-400/10
+                            bg-slate-900/40
+                            p-5">
+                                <div>
+                                    <p className="
+                                    text-lg
+                                    font-medium">
+                                        {
+                                            task.priority === "high"
+                                            ? "🔴"
+
+                                            : task.priority === "medium"
+                                            ? "🟡"
+
+                                            : "🟢"
+                                        }
+                                        {" "}
+                                        {task.text}
+                                    </p>
+
+                                    <p className="
+                                    mt-1
+                                    text-sm
+                                    text-white/50">
+                                        {
+                                            task.completedToday
+                                            ? "Completada"
+                                            : "Pendiente"
+                                        }
+                                    </p>
+                                </div>
+
+                                {
+                                    task.completed
+                                    ? (
+                                        <div className="
+                                        px-4
+                                        py-2
+                                        rounded-xl
+                                        bg-green-500/10
+                                        text-green-400
+                                        text-sm">
+                                            ✓ Completada
+                                        </div>
+                                    ) : (
+                                        <button
+                                        onClick={() => togglePriority(task.id)}
+                                        className="
+                                        w-10
+                                        h-10
+                                        rounded-full
+                                        border
+                                        border-cyan-400/20
+                                        hover:bg-cyan-400/20
+                                        transition">
+                                            ✓
+                                        </button>
+                                    )
+                                }
+                            </div>
+                        ))
+                    }
+                    {
+                        priorities.length === 0 && (
+                            <div className="
+                            py-12
+                            text-center
+                            text-white/50">
+                                No tienes tareas registradas
+                            </div>
+                        )
+                    }
+                </div>
             </div>
-            
+
+            {/* Agenda */}
+            <div className="
+            mt-12
+            rounded-3xl
+            border
+            border-cyan-400/15
+            bg-white/5
+            backdrop-blur-xl
+            p-8">
+                <h2 className="
+                text-2xl
+                font-semibold">
+                    Agenda de hoy
+                </h2>
+
+                <p className="
+                mt-4
+                text-white/50">
+                    Próximamente podrás organizar
+                    eventos, reuniones y recordatorios.
+                </p>
+            </div>
         </div>
     )
 }

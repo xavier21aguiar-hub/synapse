@@ -10,6 +10,7 @@ export default function QuickAddButton() {
 
     const [task,setTask] = useState("")
     const [priority, setPriority] = useState(2)
+    const [taskType,setTaskType] = useState("task")
     const {addPriority, loadTransactions,createHabit} = useDashboard()
 
     const handleAdd = () => {
@@ -23,7 +24,6 @@ export default function QuickAddButton() {
     const location = useLocation()
     const isFinance = location.pathname === "/finance"
     const isHabits = location.pathname === "/habits"
-    
 
     const [habitIcon,setHabitIcon] = useState("📚")
 
@@ -79,7 +79,7 @@ export default function QuickAddButton() {
         await createHabit({
             user_id: "00000000-0000-0000-0000-000000000001",
             name: habitName,
-            icon: "🎯",
+            icon: habitIcon,
             frequency_type: frequencyType,
             frequency_days: frequencyDays
         })
@@ -119,20 +119,25 @@ export default function QuickAddButton() {
 
         {open && (
             <div className="
-                fixed
-                bottom-28
-                right-8
-                w-80
-                bg-surface
-                border
-                border-gray-800
-                rounded-3xl
-                p-6
-                shadow-2xl">
-                    <p className="text-primary text-sm mb-4">
-                        ⚡ Agregar rápido
-                    </p>
-
+            fixed
+            bottom-28
+            right-8
+            w-80
+            bg-surface
+            border
+            border-gray-800
+            rounded-3xl
+            p-6
+            shadow-2xl">
+                <p className="text-primary text-sm mb-4">
+                    {
+                        isFinance
+                        ? "💰 Movimiento financiero"
+                        : isHabits
+                        ? "🎯 Nuevo hábito"
+                        : "📋 Nueva actividad"
+                    }
+                </p>
                     {
                         isFinance ? (
                             <>
@@ -209,7 +214,7 @@ export default function QuickAddButton() {
                             mt-4
                             flex-wrap">
                                 {
-                                    ["📚","🏋️","🧘","💧","🏃","🎸"]
+                                    ["📚","🏋️","🧘","💧","🏃","🎸","💻","📖","🎹","🚴","🎨","🎯"]
                                     .map(icon => (
                                         <button
                                         key={icon}
@@ -253,7 +258,13 @@ export default function QuickAddButton() {
                             <>
                             <input value={task}
                             onChange={(e) => setTask(e.target.value)}
-                            placeholder="Descripción"
+                            placeholder= {
+                                taskType === "task"
+                                ? "Ej. Dashboard Fabric"
+                                : taskType === "event"
+                                ? "Ej. Reunión mentor"
+                                : "Ej. Comprar despensa"
+                            }
                             className="
                             w-full
                             bg-[#20242d]
@@ -325,7 +336,7 @@ export default function QuickAddButton() {
                                     💰 Ingreso
                                 </button>
                             </div>
-                        ) : isHabits ?(
+                        ) : isHabits ? (
                             <button
                             onClick={handleHabit}
                             className="
@@ -340,18 +351,51 @@ export default function QuickAddButton() {
                                 {habitIcon} Crear hábito
                             </button>
                         ) : (
-                            <div className="flex gap-3 mt-5">
-                                <button onClick= {handleAdd} className="flex-1 bg-primary py-3 rounded-xl">
-                                    + Tarea
+                            <div className="
+                            flex
+                            gap-3
+                            mt-5">
+                                <button 
+                                onClick={() => setTaskType("task")} 
+                                className={`
+                                flex-1
+                                py-2 
+                                rounded-xl
+                                ${taskType === "task"
+                                    ? "bg-primary"
+                                    : "bg-[#20242d]"
+                                }`}>
+                                    ✅ Tarea
                                 </button>
                                     
-                                <button className="flex-1 bg-[#20242d] py-3 rounded-xl">
-                                    + Hábito
+                                <button 
+                                onClick={() => setTaskType("event")} 
+                                className={`
+                                flex-1
+                                py-2 
+                                rounded-xl
+                                ${taskType === "event"
+                                    ? "bg-primary"
+                                    : "bg-[#20242d]"
+                                }`}>
+                                    📅 Evento
+                                </button>
+
+                                <button 
+                                onClick={() => setTaskType("reminder")} 
+                                className={`
+                                flex-1
+                                py-2 
+                                rounded-xl
+                                ${taskType === "reminder"
+                                    ? "bg-primary"
+                                    : "bg-[#20242d]"
+                                }`}>
+                                    🔔 Recordatorio
                                 </button>
                             </div>
                         )
                     }
-
                     {
                     successMessage && (
                     <p className="
