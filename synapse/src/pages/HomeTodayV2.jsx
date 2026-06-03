@@ -66,14 +66,16 @@ export default function HomeTodayV2(){
         {
             title:"Hábitos",
             icon: <Dumbbell size={40} strokeWidth={2.3} />,
+            route:"/habits",
             content:"2 hábitos completados hoy.",
             x:-290,
             y:220
         },
         {
-            title:"Objetivo",
+            title:"Tareas",
             icon: <Target size={40} strokeWidth={2.3} />,
-            content:"Mantener enfoque profundo.",
+            route:"/tasks",
+            content:"Hoy has completado 2 de 3 tareas del dia.",
             x:-340,
             y:-130
         },

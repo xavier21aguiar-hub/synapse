@@ -8,6 +8,14 @@ from app.models.history import  History
 from app.routes.history import router as historyRouter
 from app.models.transaction import Transaction
 from app.routes import transaction
+from app.models.financial_goal import FinancialGoal
+from app.routes import financial_goal
+from app.models.portfolio_asset import PortfolioAsset
+from app.routes import portfolio_asset
+from app.models.habit import Habit
+from app.models.habit_log import HabitLog
+from app.routes import habit
+from app.routes import habit_log
 
 app = FastAPI()
 
@@ -35,4 +43,20 @@ app.include_router(
 
 app.include_router(
     transaction.router
+)
+
+app.include_router(
+    financial_goal.router
+)
+
+app.include_router(
+    portfolio_asset.router
+)
+
+app.include_router(
+    habit.router
+)
+
+app.include_router(
+    habit_log.router
 )

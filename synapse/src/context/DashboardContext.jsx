@@ -14,6 +14,12 @@ import { predictNext } from "../utils/predictEngine"
 import { rememberConversation, analyzeConversation } from "../utils/conversationMemory"
 import { updateInternalState } from "../utils/internalStateEngine"
 import { getTransactions } from "../services/financeService"
+import { getGoals } from "../services/goalService"
+import { getPortfolioAssets} from "../services/portfolioService"
+import { getHabits } from "../services/habitService"
+import { getHabitLogs } from "../services/habitLogService"
+import { saveHabit } from "../services/habitService"
+import { saveHabitLog } from "../services/habitLogService"
 
 const DashboardContext=createContext()
 
@@ -54,6 +60,14 @@ export function DashboardProvider({
     const [moodHistory, setMoodHistory] = useState([])
 
     const [transactions,setTransactions] = useState([])
+
+    const [goals,setGoals] = useState([])
+
+    const [portfolioAssets,setPortfolioAssets] = useState([])
+
+    const [habitsData,setHabitsData] = useState([])
+
+    const [habitLogs,setHabitLogs] = useState([])
 
     const [conversationHistory,setConversationHistory] = useState(()=>{
         const saved=
@@ -209,6 +223,21 @@ export function DashboardProvider({
         }
     }
 
+    const completeHabit = async(habitId) => {
+        try{
+            await saveHabitLog({
+                habit_id:habitId,
+
+                completed_date: new Date()
+                .toISOString()
+                .split("T")[0]
+            })
+            await loadHabitLogs()
+        }catch(error){
+            console.error(error)
+        }
+    }
+
 const togglePriority=async(id)=>{
     try{
         const task = dashboardPriorities.find(
@@ -250,8 +279,62 @@ const loadTransactions = async() => {
         console.error(error)
     }
 }
+
+const loadGoals = async() =>{
+    try{
+        const data = await getGoals()
+
+        setGoals(data)
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const loadPortfolioAssets = async() => {
+    try{
+        const data = await getPortfolioAssets()
+
+        setPortfolioAssets(data)
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const loadHabits = async() => {
+    try{
+        const data = await getHabits()
+
+        setHabitsData(data)
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const loadHabitLogs = async() => {
+    try{
+        const data = await getHabitLogs()
+
+        setHabitLogs(data)
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const createHabit = async(habit) => {
+    try{
+        await saveHabit(habit)
+        await loadHabits()
+    }catch(error){
+        console.error(error)
+    }
+}
+
 useEffect(() => {
     loadTransactions()
+    loadGoals()
+    loadPortfolioAssets()
+    loadHabits()
+    loadHabitLogs()
 },[])
 
 console.log("PROVIDER VALUE:",{
@@ -260,6 +343,40 @@ console.log("PROVIDER VALUE:",{
     mood,
     energy
 })
+
+const completedTasks = dashboardPriorities.filter(
+    task => task.completed
+)
+const pendingTasks = dashboardPriorities.filter(
+    task => !task.completed
+)
+const highPriorityPending = pendingTasks.filter(
+    task => task.priority === "high"
+)
+const completionRate = dashboardPriorities.length
+? Math.round(
+    (
+        completedTasks.length /
+        dashboardPriorities.length
+    ) * 100
+)
+: 0
+
+const taskSummary = {
+    completedToday:
+    completedTasks.length,
+
+    totalToday:
+    dashboardPriorities.length,
+
+    pending:
+    pendingTasks.length,
+
+    highPriorityPending:
+    highPriorityPending.length,
+
+    completionRate
+}
 
 return(
     <DashboardContext.Provider
@@ -282,7 +399,18 @@ return(
         moodHistory,
         setMoodHistory,
         transactions,
-        loadTransactions
+        loadTransactions,
+        goals,
+        loadGoals,
+        portfolioAssets,
+        loadPortfolioAssets,
+        habitsData,
+        loadHabits,
+        habitLogs,
+        loadHabitLogs,
+        createHabit,
+        completeHabit,
+        taskSummary
     }}>
         {children}
     </DashboardContext.Provider>

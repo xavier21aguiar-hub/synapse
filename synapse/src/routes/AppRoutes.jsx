@@ -4,6 +4,8 @@ import Home from "../pages/Home"
 import HomeToday from "../pages/HomeToday"
 import HomeTodayV2 from "../pages/HomeTodayV2"
 import Finance from "../pages/Finance"
+import Habits from "../pages/Habits"
+import Tasks from "../pages/Tasks"
 
 export default function AppRoutes() {
 
@@ -14,6 +16,8 @@ export default function AppRoutes() {
                 <Route index element={<HomeTodayV2/>}/>
                 <Route path="dashboard" element={<Home/>}/>
                 <Route path="/finance" element={<Finance/>}/>
+                <Route path="/habits" element={<Habits/>}/>
+                <Route path="/tasks" element={<Tasks/>}/>
             </Route>
         </Routes>
         </BrowserRouter>

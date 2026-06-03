@@ -10,7 +10,7 @@ export default function QuickAddButton() {
 
     const [task,setTask] = useState("")
     const [priority, setPriority] = useState(2)
-    const {addPriority, loadTransactions} = useDashboard()
+    const {addPriority, loadTransactions,createHabit} = useDashboard()
 
     const handleAdd = () => {
         if(!task.trim()) return
@@ -22,6 +22,10 @@ export default function QuickAddButton() {
 
     const location = useLocation()
     const isFinance = location.pathname === "/finance"
+    const isHabits = location.pathname === "/habits"
+    
+
+    const [habitIcon,setHabitIcon] = useState("📚")
 
     const [amount,setAmount] = useState("")
     const [category,setCategory] = useState("Comida")
@@ -62,6 +66,29 @@ export default function QuickAddButton() {
         }catch(error){
             console.error(error)
         }
+    }
+
+    const [habitName,setHabitName] = useState("")
+    const [frequencyType,setFrequencyType] = useState("daily")
+    const [frequencyDays,setFrequencyDays] = useState([])
+
+    const handleHabit = async() => {
+        if(!habitName.trim())
+            return
+
+        await createHabit({
+            user_id: "00000000-0000-0000-0000-000000000001",
+            name: habitName,
+            icon: "🎯",
+            frequency_type: frequencyType,
+            frequency_days: frequencyDays
+        })
+        setHabitName("")
+        setFrequencyType("daily")
+
+        setFrequencyDays([])
+
+        setOpen(false)
     }
     
     return(
@@ -161,6 +188,67 @@ export default function QuickAddButton() {
                                 </option>
                             </select>
                             </>
+                        ) : isHabits ? (
+                            <>
+                            <input
+                            value={habitName}
+                            onChange={(e)=> setHabitName(
+                                e.target.value
+                            )}
+                            placeholder="Nombre del hábito"
+                            className="
+                            w-full
+                            bg-[#20242d]
+                            rounded-xl
+                            p-4
+                            outline-none"/>
+
+                            <div className="
+                            flex
+                            gap-2
+                            mt-4
+                            flex-wrap">
+                                {
+                                    ["📚","🏋️","🧘","💧","🏃","🎸"]
+                                    .map(icon => (
+                                        <button
+                                        key={icon}
+                                        onClick={() => setHabitIcon(icon)}
+                                        className={`
+                                        w-12
+                                        h-12
+                                        rounded-xl
+                                        transition-all
+                                        ${
+                                            habitIcon === icon
+                                            ? "bg-primary"
+                                            : "bg-[#20242d]"
+                                        }`}>
+                                            {icon}
+                                        </button>
+                                    ))
+                                }
+                            </div>
+
+                            <select
+                            value={frequencyType}
+                            onChange={(e) => setFrequencyType(e.target.value)}
+                            className="
+                            w-full
+                            mt-4
+                            bg-[#20242d]
+                            rounded-xl
+                            p-4
+                            outline-none">
+                                <option value="daily">
+                                    Diario
+                                </option>
+                                
+                                <option value="weekly">
+                                    Semanal
+                                </option>
+                            </select>
+                            </>
                         ) : (
                             <>
                             <input value={task}
@@ -237,6 +325,20 @@ export default function QuickAddButton() {
                                     💰 Ingreso
                                 </button>
                             </div>
+                        ) : isHabits ?(
+                            <button
+                            onClick={handleHabit}
+                            className="
+                            w-full
+                            mt-5
+                            bg-primary
+                            py-3
+                            rounded-xl
+                            transition-all
+                            duration-300
+                            hover:scale-[1.02]">
+                                {habitIcon} Crear hábito
+                            </button>
                         ) : (
                             <div className="flex gap-3 mt-5">
                                 <button onClick= {handleAdd} className="flex-1 bg-primary py-3 rounded-xl">

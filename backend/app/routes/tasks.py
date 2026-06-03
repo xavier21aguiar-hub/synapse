@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import (APIRouter, Depends)
 from sqlalchemy.orm import Session
 from app.database.dependencies import get_db
 from app.models.task_model import Task
