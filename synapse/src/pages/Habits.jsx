@@ -139,7 +139,6 @@ export default function Habits(){
                 left-60
                 w-[260px]
                 rounded-3xl
-                rounded-3xl
                 border
                 border-cyan-400/15
                 bg-white/5

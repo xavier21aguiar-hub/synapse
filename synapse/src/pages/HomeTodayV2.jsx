@@ -14,7 +14,13 @@ export default function HomeTodayV2(){
             energy,
             insight,
             prediction,
-            internalState
+            internalState,
+            taskSummary,
+            habitsData,
+            habitLogs,
+            transactions,
+            habitSummary,
+            financeSummary
         }=useDashboard()
     
         const now = new Date()
@@ -52,14 +58,14 @@ export default function HomeTodayV2(){
         {
             title: "Synapse piensa",
             icon: <Brain size={40} strokeWidth={2.3} />,
-            content:"Hoy detecté buena estabilidad emocional.",
+            content: insight,
             x:0,
             y:-360
         },
         {
             title:"Predicción",
             icon: <Sparkles size={40} strokeWidth={2.3} />,
-            content:"Tu energía seguirá estable.",
+            content: prediction || "No hay suficientes datos todavía",
             x:350,
             y:-116
         },
@@ -67,7 +73,7 @@ export default function HomeTodayV2(){
             title:"Hábitos",
             icon: <Dumbbell size={40} strokeWidth={2.3} />,
             route:"/habits",
-            content:"2 hábitos completados hoy.",
+            content: `${habitSummary.completedToday} de ${habitSummary.totalToday} hábitos completados`,
             x:-290,
             y:220
         },
@@ -75,7 +81,7 @@ export default function HomeTodayV2(){
             title:"Tareas",
             icon: <Target size={40} strokeWidth={2.3} />,
             route:"/tasks",
-            content:"Hoy has completado 2 de 3 tareas del dia.",
+            content: `${taskSummary.completedToday} de ${taskSummary.totalToday} tareas completadas`,
             x:-340,
             y:-130
         },
@@ -83,7 +89,7 @@ export default function HomeTodayV2(){
             title:"Finanzas",
             icon: <Wallet size={40} strokeWidth={2.3} />,
             route:"/finance",
-            content:"Gasto controlado hoy.",
+            content: `Balance actual: $${financeSummary.balance}`,
             x:300,
             y:220
         }
@@ -140,6 +146,13 @@ export default function HomeTodayV2(){
     moodUI[mood]
     ||
     moodUI.calm
+
+    const focusMessage = {
+        stressed: "reducir el estrés y recuperar energía",
+        fatigued: "descansar y recuperar enfoque",
+        energized: "aprovechar tu energía al máximo",
+        calm: "mantener estabilidad emocional"
+    }
 
     return(
         <div className="
@@ -229,7 +242,7 @@ export default function HomeTodayV2(){
                                 text-2xl
                                 font-semibold
                                 leading-normal">
-                                    mantener estabilidad emocional
+                                    {focusMessage[mood]}
                                 </h2>
 
                             </div>

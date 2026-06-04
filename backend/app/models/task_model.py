@@ -1,7 +1,5 @@
 from sqlalchemy import Column,Integer,String,Boolean
-
 from app.database.base import Base
-
 
 class Task(Base):
 
@@ -28,6 +26,6 @@ class Task(Base):
 
 
     priority=Column(
-        Integer,
-        default=1
+        String,
+        default="medium"
     )

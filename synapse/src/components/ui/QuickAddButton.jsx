@@ -9,14 +9,45 @@ export default function QuickAddButton() {
     const [open,setOpen] = useState(false)
 
     const [task,setTask] = useState("")
-    const [priority, setPriority] = useState(2)
+    const [eventTime,setEventTime] = useState("")
+    const [eventDate,setEventDate] = useState("")
+    const [reminderTime,setReminderTime] = useState("")
+    const [reminderDate,setReminderDate] = useState("")
+    const [priority, setPriority] = useState("medium")
     const [taskType,setTaskType] = useState("task")
-    const {addPriority, loadTransactions,createHabit} = useDashboard()
+    const {addPriority, loadTransactions,createHabit,addEvent, addReminder} = useDashboard()
 
-    const handleAdd = () => {
+    const handleAdd = async() => {
         if(!task.trim()) return
 
-        addPriority(task,priority)
+        if(
+            taskType === "task"
+        ){
+            await addPriority(task,priority)
+        }
+
+        if(
+            taskType === "event"
+        ){
+            await addEvent({
+                title: task,
+                event_date: eventDate,
+                event_time: eventTime,
+                duration:60
+            })
+        }
+
+        if(
+            taskType === "reminder"
+        ){
+            await addReminder({
+                title: task,
+                reminder_date: reminderDate,
+                reminder_time: reminderTime || null,
+                smart_schedule: !reminderTime
+            })
+        }
+
         setTask("")
         setOpen(false)
     }
@@ -191,6 +222,12 @@ export default function QuickAddButton() {
                                 <option>
                                     Ocio
                                 </option>
+                                <option>
+                                    Ingreso
+                                </option>
+                                <option>
+                                    Pago
+                                </option>
                             </select>
                             </>
                         ) : isHabits ? (
@@ -256,47 +293,202 @@ export default function QuickAddButton() {
                             </>
                         ) : (
                             <>
+                            <div className="
+                            flex
+                            gap-3
+                            mt-6">
+                                <button 
+                                onClick={() => setTaskType("task")} 
+                                className={`
+                                flex-1
+                                py-2 
+                                rounded-xl
+                                ${taskType === "task"
+                                    ? "bg-primary"
+                                    : "bg-[#20242d]"
+                                }`}>
+                                    ✅ Tarea
+                                </button>
+                                    
+                                <button 
+                                onClick={() => setTaskType("event")} 
+                                className={`
+                                flex-1
+                                py-2 
+                                rounded-xl
+                                ${taskType === "event"
+                                    ? "bg-primary"
+                                    : "bg-[#20242d]"
+                                }`}>
+                                    📅 Evento
+                                </button>
+
+                                <button 
+                                onClick={() => setTaskType("reminder")} 
+                                className={`
+                                flex-1
+                                py-2 
+                                rounded-xl
+                                ${taskType === "reminder"
+                                    ? "bg-primary"
+                                    : "bg-[#20242d]"
+                                }`}>
+                                    🔔 Recordatorio
+                                </button>
+                            </div>
+                            
                             <input value={task}
                             onChange={(e) => setTask(e.target.value)}
                             placeholder= {
                                 taskType === "task"
-                                ? "Ej. Dashboard Fabric"
+                                ? "Ej. Terminar excel"
                                 : taskType === "event"
-                                ? "Ej. Reunión mentor"
+                                ? "Ej. Reunión con el supervisor"
                                 : "Ej. Comprar despensa"
                             }
                             className="
                             w-full
                             bg-[#20242d]
                             rounded-xl
+                            mt-3
                             p-4
                             outline-none
                             border
                             border-transparent
                             focus:border-primary"/>
-                            
-                            <select value={priority}
-                            onChange={(e) =>
-                                setPriority(
-                                    Number(e.target.value)
+                            {
+                                taskType === "reminder" && (
+                                    <>
+                                    <input 
+                                    type="date" 
+                                    value={reminderDate}
+                                    onChange={(e)=>
+                                        setReminderDate(
+                                            e.target.value
+                                        )
+                                    }
+                                    className="
+                                    w-full
+                                    mt-4
+                                    bg-[#20242d]
+                                    rounded-xl
+                                    p-4
+                                    outline-none"
+                                    />
+                                    <input
+                                    type="time"
+                                    value={reminderTime}
+                                    onChange={(e)=>
+                                        setReminderTime(
+                                            e.target.value
+                                        )
+                                    }
+                                    className="
+                                    w-full
+                                    mt-4
+                                    bg-[#20242d]
+                                    rounded-xl
+                                    p-4
+                                    outline-none"
+                                    placeholder="Opcional"/>
+                                    <p className="
+                                    mt-3
+                                    text-xs
+                                    text-cyan-300">
+                                        {
+                                            reminderTime
+                                            ? "🔔 Se recordará a la hora indicada."
+                                            : "🧠 Synapse elegirá el mejor momento para recordarlo."
+                                        }
+                                    </p>
+                                    </>
                                 )
-                            } className="
+                            }
+                            {
+                                taskType === "event" && (
+                                    <>
+                                    <input type="date"
+                                    value={eventDate}
+                                    onChange={(e)=>
+                                        setEventDate(
+                                            e.target.value
+                                        )
+                                    }
+                                    className="
+                                    w-full
+                                    mt-4
+                                    bg-[#20242d]
+                                    rounded-xl
+                                    mt-4
+                                    p-4
+                                    outline-none"
+                                    />
+                                    <input 
+                                    type="time"
+                                    value={eventTime}
+                                    onChange={(e)=>
+                                        setEventTime(
+                                            e.target.value
+                                        )
+                                    }
+                                    className="
+                                    w-full
+                                    bg-[#20242d]
+                                    rounded-xl
+                                    mt-4
+                                    p-4
+                                    outline-none"/>
+                                    </>
+                                    
+                                )
+                            }
+                            {
+                                taskType === "task" && (
+                                    <select value={priority}
+                                    onChange={(e) =>
+                                    setPriority(
+                                        e.target.value
+                                    )
+                                    } className="
+                                    w-full
+                                    mt-4
+                                    bg-[#20242d]
+                                    rounded-xl
+                                    p-4
+                                    outline-none">
+                                        <option value={"high"}>
+                                            🔴 Alta
+                                        </option>
+                                        <option value={"medium"}>
+                                            🟡 Media
+                                        </option>
+                                        <option value={"low"}>
+                                            🟢 Baja
+                                        </option>
+                                    </select>
+                                )
+                            }
+                            <button
+                            onClick={handleAdd}
+                            className="
                             w-full
-                            mt-4
-                            bg-[#20242d]
+                            mt-5
+                            bg-primary
+                            py-3
                             rounded-xl
-                            p-4
-                            outline-none">
-                                <option value={3}>
-                                    🔴 Alta
-                                </option>
-                                <option value={2}>
-                                    🟡 Media
-                                </option>
-                                <option value={1}>
-                                    🟢 Baja
-                                </option>
-                            </select>
+                            transition-all
+                            duration-300
+                            hover:scale-[1.02]">
+                                {
+                                    taskType === "task"
+                                    ? "Crear tarea"
+
+                                    : taskType === "event"
+                                    ? "Crear evento"
+
+                                    : "Crear recordatorio"
+                                }
+                            </button>
                         </>
                         )
                     }
@@ -350,51 +542,7 @@ export default function QuickAddButton() {
                             hover:scale-[1.02]">
                                 {habitIcon} Crear hábito
                             </button>
-                        ) : (
-                            <div className="
-                            flex
-                            gap-3
-                            mt-5">
-                                <button 
-                                onClick={() => setTaskType("task")} 
-                                className={`
-                                flex-1
-                                py-2 
-                                rounded-xl
-                                ${taskType === "task"
-                                    ? "bg-primary"
-                                    : "bg-[#20242d]"
-                                }`}>
-                                    ✅ Tarea
-                                </button>
-                                    
-                                <button 
-                                onClick={() => setTaskType("event")} 
-                                className={`
-                                flex-1
-                                py-2 
-                                rounded-xl
-                                ${taskType === "event"
-                                    ? "bg-primary"
-                                    : "bg-[#20242d]"
-                                }`}>
-                                    📅 Evento
-                                </button>
-
-                                <button 
-                                onClick={() => setTaskType("reminder")} 
-                                className={`
-                                flex-1
-                                py-2 
-                                rounded-xl
-                                ${taskType === "reminder"
-                                    ? "bg-primary"
-                                    : "bg-[#20242d]"
-                                }`}>
-                                    🔔 Recordatorio
-                                </button>
-                            </div>
-                        )
+                        ) : null
                     }
                     {
                     successMessage && (

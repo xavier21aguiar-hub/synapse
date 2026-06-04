@@ -20,6 +20,8 @@ import { getHabits } from "../services/habitService"
 import { getHabitLogs } from "../services/habitLogService"
 import { saveHabit } from "../services/habitService"
 import { saveHabitLog } from "../services/habitLogService"
+import { getEvents,createEvent,updateEvent } from "../services/eventService"
+import { getReminders,createReminder,updateReminder} from "../services/reminderService"
 
 const DashboardContext=createContext()
 
@@ -68,6 +70,10 @@ export function DashboardProvider({
     const [habitsData,setHabitsData] = useState([])
 
     const [habitLogs,setHabitLogs] = useState([])
+
+    const [events,setEvents] = useState([])
+
+    const [reminders,setReminders] = useState([])
 
     const [conversationHistory,setConversationHistory] = useState(()=>{
         const saved=
@@ -329,12 +335,34 @@ const createHabit = async(habit) => {
     }
 }
 
+const loadEvents = async() => {
+    try{
+        const data = await getEvents()
+        
+        setEvents(data)
+    }catch(error){
+        console.error(error)
+    }
+}
+
+const loadReminders = async() => {
+    try{
+        const data = await getReminders()
+
+        setReminders(data)
+    }catch(error){
+        console.error(error)
+    }
+}
+
 useEffect(() => {
     loadTransactions()
     loadGoals()
     loadPortfolioAssets()
     loadHabits()
     loadHabitLogs()
+    loadEvents()
+    loadReminders()
 },[])
 
 console.log("PROVIDER VALUE:",{
@@ -378,6 +406,142 @@ const taskSummary = {
     completionRate
 }
 
+const today = new Date()
+.toISOString()
+.split("T")[0]
+const completedHabitsToday = habitLogs.filter(
+    log => log.completed_date === today
+).length
+
+const habitSummary = {
+    completedToday: completedHabitsToday,
+    totalToday: habitsData.length,
+    completionRate: habitsData.length
+
+    ? Math.round(
+        (
+            completedHabitsToday /
+            habitsData.length
+        ) * 100
+    )
+    : 0
+}
+
+const income = transactions
+.filter(t => t.type === "income")
+.reduce((acc,t) => acc + t.amount, 0)
+const expenses = transactions
+.filter(t => t.type === "expense")
+.reduce((acc,t) => acc + t.amount, 0)
+
+const financeSummary = {
+    income, 
+    expenses,
+    balance: 
+    income - expenses
+}
+
+const addEvent = async(eventData) => {
+    try{
+        const newEvent = await createEvent(
+            eventData
+        )
+
+        setEvents(
+            prev => [
+                ...prev,
+                newEvent
+            ]
+        )
+    }catch(error){
+        console.log(error)
+    }
+}
+
+const addReminder = async(reminderData) => {
+    try{
+        const newReminder = await createReminder(
+            reminderData
+        )
+
+        setReminders(
+            prev => [
+                ...prev,
+                newReminder
+            ]
+        )
+    }catch(error){
+        console.log(error)
+    }
+}
+
+const timelineItems = [
+    ...dashboardPriorities.map(
+        task => ({
+            type: "task",
+            id: task.id,
+            title: task.text,
+            date: null,
+            time: null,
+            completed: task.completed
+        })
+    ),
+
+    ...events.map(
+        event => ({
+            type: "event",
+            id: event.id,
+            title: event.title,
+            date: event.event_date,
+            time: event.event_time,
+            completed: event.completed
+        })
+    ),
+
+    ...reminders.map(
+        reminder => ({
+            type: "reminder",
+            id: reminder.id,
+            title: reminder.title,
+            date: reminder.reminder_date,
+            time: reminder.reminder_time,
+            completed: reminder.completed
+        })
+    ),
+]
+
+const toggleEvent = async(id)=> {
+    try{
+        const updated = await updateEvent(id)
+
+        setEvents(prev =>
+            prev.map(
+                event => event.id === id
+                ? updated
+                : event
+            )
+        )
+    }catch(error){
+        console.log(error)
+    }
+}
+
+const toggleReminder = async(id)=> {
+    try{
+        const updated = await updateReminder(id)
+
+        setReminders(prev =>
+            prev.map(
+                reminder => reminder.id === id
+                ? updated
+                : reminder
+            )
+        )
+    }catch(error){
+        console.log(error)
+    }
+}
+
 return(
     <DashboardContext.Provider
     
@@ -410,7 +574,18 @@ return(
         loadHabitLogs,
         createHabit,
         completeHabit,
-        taskSummary
+        taskSummary,
+        habitSummary,
+        financeSummary,
+        events,
+        reminders,
+        loadEvents,
+        loadReminders,
+        addEvent,
+        addReminder,
+        timelineItems,
+        toggleEvent,
+        toggleReminder
     }}>
         {children}
     </DashboardContext.Provider>

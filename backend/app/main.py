@@ -16,6 +16,8 @@ from app.models.habit import Habit
 from app.models.habit_log import HabitLog
 from app.routes import habit
 from app.routes import habit_log
+from app.routes.event import router as event_router
+from app.routes.reminder import router as reminder_router
 
 app = FastAPI()
 
@@ -59,4 +61,12 @@ app.include_router(
 
 app.include_router(
     habit_log.router
+)
+
+app.include_router(
+    event_router
+)
+
+app.include_router(
+    reminder_router
 )

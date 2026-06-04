@@ -1,7 +1,12 @@
 from pydantic import BaseModel
+from typing import Literal
 
 
 class TaskCreate(BaseModel):
     text: str
     completed: bool
-    priority: int
+    priority: Literal[
+        "low",
+        "medium",
+        "high"
+    ]
