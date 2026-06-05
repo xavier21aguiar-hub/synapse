@@ -15,3 +15,5 @@ class HabitCreate(
     frequency_type: str
 
     frequency_days: list[str] | None = None
+
+    custom_days: str | None = None

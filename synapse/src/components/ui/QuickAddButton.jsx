@@ -103,16 +103,56 @@ export default function QuickAddButton() {
     const [frequencyType,setFrequencyType] = useState("daily")
     const [frequencyDays,setFrequencyDays] = useState([])
 
+    const weekDays = [
+        {
+            label:"L",
+            value:1
+        },
+        {
+            label:"M",
+            value:2
+        },
+        {
+            label:"Mi",
+            value:3
+        },
+        {
+            label:"J",
+            value:4
+        },
+        {
+            label:"V",
+            value: 5
+        },
+        {
+            label: "S",
+            value: 6,
+        },
+        {
+            label: "D",
+            value:0
+        }
+    ]
+
     const handleHabit = async() => {
         if(!habitName.trim())
             return
+
+        if(
+            frequencyType === "custom" && 
+            frequencyDays.length === 0
+        ){
+            return
+        }
 
         await createHabit({
             user_id: "00000000-0000-0000-0000-000000000001",
             name: habitName,
             icon: habitIcon,
             frequency_type: frequencyType,
-            frequency_days: frequencyDays
+            custom_days: frequencyType === "custom"
+            ? JSON.stringify(frequencyDays)
+            : null
         })
         setHabitName("")
         setFrequencyType("daily")
@@ -289,7 +329,55 @@ export default function QuickAddButton() {
                                 <option value="weekly">
                                     Semanal
                                 </option>
+
+                                <option value="custom">
+                                    Personalizado
+                                </option>
                             </select>
+                            {
+                                frequencyType === "custom" && (
+                                    <div className="
+                                    mt-4">
+                                        <p className="
+                                        text-sm
+                                        text-white/60
+                                        mb-3">
+                                            Selecciona los días
+                                        </p>
+
+                                        <div className="
+                                        flex
+                                        gap-2
+                                        flex-wrap">
+                                            {
+                                                weekDays.map(day => (
+                                                    <button
+                                                    key={day.value}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setFrequencyDays(
+                                                            prev => prev.includes(day.value)
+                                                            ? prev.filter(d => d !==day.value)
+                                                            : [...prev, day.value]
+                                                        )
+                                                    }}
+                                                    className={`
+                                                    w-10
+                                                    h-10
+                                                    rounded-xl
+                                                    transition-all
+                                                    ${frequencyDays.includes(day.value)
+                                                        ? "bg-primary text-black"
+                                                        : "bg-[#20242d]"
+                                                    }`}>
+                                                        {day.label}
+                                                    </button>
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
                             </>
                         ) : (
                             <>

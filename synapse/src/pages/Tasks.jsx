@@ -1,5 +1,6 @@
 import { useDashboard } from "../context/DashboardContext"
 import SynapseCore from "../components/dashboard/synapse/SynapseCore"
+import { AnimatePresence, motion, progress } from "framer-motion"
 
 export default function Tasks(){
     const {priorities,togglePriority,toggleEvent,toggleReminder,taskSummary,mood,timelineItems} = useDashboard()
@@ -30,6 +31,34 @@ export default function Tasks(){
 
         return timeA.localeCompare(timeB)
     })
+
+    const pendingItems = sortedTimeLine.filter(
+        item => !item.completed
+    )
+
+    const completedItems = sortedTimeLine.filter(
+        item => item.completed
+    )
+
+    const taskCount = timelineToday.filter(
+        item => item.type === "task"
+    ).length
+
+    const eventCount = timelineToday.filter(
+        item => item.type === "event"
+    ).length
+
+    const reminderCount = timelineToday.filter(
+        item => item.type === "reminder"
+    ).length
+
+    const agendaInsight = eventCount >= 3
+    ? "📅 Tienes un día cargado de eventos."
+    : reminderCount >= 3
+    ? "🔔 Hay varios recordatorios pendientes."
+    : taskCount >= 5
+    ? "📋 Hoy tienes muchas tareas por completar."
+    : "✨ Agenda equilibrada."
 
     return(
         <div className="
@@ -109,11 +138,35 @@ export default function Tasks(){
                     border-cyan-400/15"/>
     
                     {/* Conversacion */}
-                    <p className="
-                    text-white/80
-                    leading-relaxed">
-                        {taskInsight}
-                    </p>
+                    <AnimatePresence mode="wait">
+
+                        <motion.p
+                        key={taskInsight}
+                        initial={{
+                            opacity: 0,
+                            y: 10
+                        }}
+                        animate={{
+                            opacity: 1,
+                            y: 0
+                        }}
+                        exit={{
+                            opacity: 0,
+                            y: -10
+                        }}
+                        transition={{
+                            duration: 0.4
+                        }}
+                        className="
+                        text-sm
+                        text-white/80
+                        leading-relaxed">
+                            {taskInsight}
+                            {" "}
+                            {agendaInsight}
+                        </motion.p>
+
+                    </AnimatePresence>
                 </div>
     
                 {/* Avatar */}
@@ -250,7 +303,7 @@ export default function Tasks(){
                                     text-sm
                                     text-white/50">
                                         {
-                                            task.completedToday
+                                            task.completed
                                             ? "Completada"
                                             : "Pendiente"
                                         }
@@ -315,9 +368,32 @@ export default function Tasks(){
                     Agenda de hoy
                 </h2>
 
+                <p className="
+                mt-2
+                text-white/50">
+                    {taskCount}
+                    {" "} tareas • {" "}
+                    
+                    {eventCount}
+                    {" "} eventos • {" "}
+                    
+                    {reminderCount}
+                    {" "} recordatorios
+                </p>
+
+                {/* Pendientes */}
+                <h3 className="
+                mt-8
+                mb-4
+                text-lg
+                font-medium
+                text-cyan-300">
+                    Pendientes
+                </h3>
+
                 {
-                    sortedTimeLine.map((item,index)=>(
-                        <div
+                    pendingItems.map((item,index)=>(
+                        <div 
                         key={index}
                         className="
                         flex
@@ -338,10 +414,10 @@ export default function Tasks(){
                                         ? "TASK"
                                         : item.type === "event"
                                         ? "EVENT"
-
                                         : "REMINDER"
                                     }
                                 </span>
+
                                 <p className="
                                 mt-2
                                 font-medium">
@@ -357,7 +433,6 @@ export default function Tasks(){
                                 </p>
                             </div>
 
-                            {/* Derecha */}
                             <div className="
                             flex
                             items-center
@@ -368,53 +443,111 @@ export default function Tasks(){
                                     {item.time || "Todo el día"}
                                 </div>
 
-                                {
-                                    item.completed
-                                    ? (
-                                        <div className="
-                                        px-3
-                                        py-1
-                                        rounded-xl
-                                        bg-green-500/10
-                                        text-green-400
-                                        text-sm">
-                                            ✓
-                                        </div>
-                                    ) : (
-                                        <button 
-                                        onClick={()=>{
-                                            if(
-                                                item.type === "task"
-                                            ){
-                                                togglePriority(item.id)
-                                            }
-
-                                            if(
-                                                item.type === "event"
-                                            ){
-                                                toggleEvent(item.id)
-                                            }
-
-                                            if(
-                                                item.type === "reminder"
-                                            ){
-                                                toggleReminder(item.id)
-                                            }
-                                        }}
-                                        className="
-                                        w-8
-                                        h-8
-                                        rounded-full
-                                        border
-                                        border-cyan-400/20">
-                                            ✓
-                                        </button>
-                                    )
-                                }
+                                <button 
+                                onClick={()=>{
+                                    if(item.type === "task"){
+                                            togglePriority(item.id)
+                                    }
+                                    if(item.type === "event"){
+                                        toggleEvent(item.id)
+                                    }
+                                    if(item.type === "reminder"){
+                                        toggleReminder(item.id)
+                                    }
+                                }}
+                                className="
+                                w-8
+                                h-8
+                                rounded-full
+                                border
+                                border-cyan-400/20">
+                                    ✓
+                                </button>
                             </div>
                         </div>
                     ))
                 }
+
+                {/* Completados */}
+                <div className="
+                mt-8
+                pt-6
+                border-t
+                border-white/10">
+                    <h3 className="
+                    mb-4
+                    text-lg
+                    font-medium
+                    text-green-400">
+                        Completados 
+                    </h3>
+
+                    {
+                        completedItems.map((item,index)=>(
+                            <div
+                            key={index}
+                            className="
+                            flex
+                            items-center
+                            justify-between
+                            py-4
+                            border-b
+                            border-white/5">
+                                <div>
+                                    <span className="
+                                    text-xs
+                                    px-2
+                                    py-1
+                                    rounded-lg
+                                    bg-white/5">
+                                        {
+                                            item.type === "task"
+                                            ? "TASK"
+                                            : item.type === "event"
+                                            ? "EVENT"
+                                            : "REMINDER"
+                                        }
+                                    </span>
+
+                                    <p className="
+                                    mt-2
+                                    font-medium">
+                                        {
+                                            item.type === "task"
+                                            ? "📋"
+                                            : item.type === "event"
+                                            ? "📅"
+                                            : "🔔"
+                                        }
+                                        {" "}
+                                        {item.title}
+                                    </p>
+                                </div>
+
+                                <div className="
+                                flex
+                                items-center
+                                gap-4">
+                                    <div className="
+                                    text-white/50
+                                    text-sm">
+                                        {item.time || "Todo el día"}
+                                    </div>
+
+                                    <div className="
+                                    px-3
+                                    py-1
+                                    rounded-xl
+                                    bg-green-500/10
+                                    text-green-400
+                                    text-sm">
+                                        ✓
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
         </div>
     )

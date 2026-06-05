@@ -57,3 +57,8 @@ class Habit(Base):
         DateTime(timezone=True),
         server_default=func.now()
     )
+
+    custom_days = Column(
+        String,
+        nullable=True
+    )

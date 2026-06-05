@@ -3,7 +3,7 @@ import SynapseCore from "../components/dashboard/synapse/SynapseCore"
 
 export default function Habits(){
 
-    const {habitsData,habitLogs,completeHabit,pattern,insight} = useDashboard()
+    const {habitsData,habitsForToday,habitLogs,completeHabit,pattern,insight} = useDashboard()
 
     const today = new Date()
     .toISOString()
@@ -106,10 +106,10 @@ export default function Habits(){
                 {" "} de {" "}
                 <span className="
                 text-cyan-300">
-                    {habitsData.length}
+                    {habitsForToday.length}
                 </span>
                 {" "}
-                {habitsData.length === 1 ? "hábito" : "hábitos"}.
+                {habitsForToday.length === 1 ? "hábito" : "hábitos"}.
             </p>
 
         </div>
@@ -168,16 +168,6 @@ export default function Habits(){
                             "Synapse sigue aprendiendo sobre tus hábitos."
                         }
                     </p>
-
-                    <p className="
-                    mt-4
-                    text-cyan-300
-                    text-sm">
-                        {
-                            insight ||
-                            "Continúa registrando hábitos."
-                        }
-                    </p>
                 </div>
 
                 {/* Avatar */}
@@ -203,14 +193,14 @@ export default function Habits(){
                 <h2 className="
                 text-2xl
                 font-semibold">
-                    {habitsData.length === 1 ? "Hábito" : "Hábitos"} de hoy
+                    {habitsForToday.length === 1 ? "Hábito" : "Hábitos"} de hoy
                 </h2>
 
                 <div className="
                 mt-8
                 space-y-4">
                     {
-                        habitsData.map(habit => {
+                        habitsForToday.map(habit => {
                             const today = new Date()
                             .toISOString()
                             .split("T")[0]
@@ -253,14 +243,47 @@ export default function Habits(){
                                     text-lg
                                     font-medium">
                                         {habit.icon}
-                                        {""}
+                                        {" "}
                                         {habit.name}
                                     </p>
                                     
                                     <p className="
                                     text-sm
                                     text-white/50">
-                                        {habit.frequency_type}
+                                        {
+                                            habit.frequency_type === "daily"
+                                            ? "Diario"
+                                            : habit.frequency_type === "weekly"
+                                            ? "Semanal"
+                                            : "Personalizado"
+                                        }
+                                        {
+                                            habit.frequency_type === "custom" && (
+                                                <p className="
+                                                mt-1
+                                                text-xs
+                                                text-cyan-300">
+                                                    {
+                                                        JSON.parse(
+                                                            habit.custom_days || "[]"
+                                                        )
+                                                        .map(day => {
+                                                            const labels = {
+                                                                0:"D",
+                                                                1:"L",
+                                                                2:"M",
+                                                                3:"Mi",
+                                                                4:"J",
+                                                                5:"V",
+                                                                6:"S"
+                                                            }
+                                                            return labels[day]
+                                                        })
+                                                        .join(" • ")
+                                                    }
+                                                </p>
+                                            )
+                                        }
                                     </p>
 
                                     <div className="

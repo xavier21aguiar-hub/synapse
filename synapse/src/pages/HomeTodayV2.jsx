@@ -4,68 +4,69 @@ import { useMemo } from "react"
 import { Brain,Sparkles,Wallet,Target,Dumbbell,Battery,BrainCircuit,Focus,Heart } from "lucide-react"
 import StatRing from "../components/home/StatRing"
 import { useNavigate } from "react-router-dom"
+import { useBrain } from "../context/BrainContext"
 
 export default function HomeTodayV2(){
     
     const navigate = useNavigate()
 
     const{
-            mood,
-            energy,
-            insight,
-            prediction,
-            internalState,
-            taskSummary,
-            habitsData,
-            habitLogs,
-            transactions,
-            habitSummary,
-            financeSummary
-        }=useDashboard()
+        mood,
+        energy,
+        taskSummary,
+        habitSummary,
+        financeSummary
+    }=useDashboard()
+
+    const {
+        brainAnalysis,
+        brainInsight,
+        brainPrediction
+    } = useBrain()
+
+    const now = new Date()
+    const hour = now.getHours()
     
-        const now = new Date()
-        const hour = now.getHours()
+    let greeting = "Buenas noches 🌙"
     
-        let greeting = "Buenas noches 🌙"
+    if( hour >= 6 && hour < 12 ){
+        greeting = "Buenos días ☀️"
+    }
     
-        if( hour >= 6 && hour < 12 ){
-            greeting = "Buenos días ☀️"
-        }
+    if( hour >= 12 && hour < 19 ){
+        greeting = "Buenas tardes 🌤️"
+    }
     
-        if( hour >= 12 && hour < 19 ){
-            greeting = "Buenas tardes 🌤️"
-        }
+    // Fecha actual en español
+    const fechaFormato = useMemo(() => {
+        return now.toLocaleDateString("es-MX", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        })
+    }, [])
     
-        // Fecha actual en español
-        const fechaFormato = useMemo(() => {
-            return now.toLocaleDateString("es-MX", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-            })
-        }, [])
-    
-        // Hora formateada
-        const horaFormato = useMemo(() => {
-            return now.toLocaleTimeString("es-MX", {
-                hour: "2-digit",
-                minute: "2-digit"
-            })
-        }, [])
+    // Hora formateada
+    const horaFormato = useMemo(() => {
+        return now.toLocaleTimeString("es-MX", {
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+    }, [])
 
     const orbitCards=[
         {
             title: "Synapse piensa",
             icon: <Brain size={40} strokeWidth={2.3} />,
-            content: insight,
+            content: brainInsight,
             x:0,
             y:-360
         },
         {
             title:"Predicción",
             icon: <Sparkles size={40} strokeWidth={2.3} />,
-            content: prediction || "No hay suficientes datos todavía",
+            content: brainPrediction || "No hay suficientes datos todavía",
             x:350,
             y:-116
         },
@@ -104,13 +105,13 @@ export default function HomeTodayV2(){
         },
         {
             label:"Estrés",
-            value:28,
+            value: brainAnalysis.stress,
             color:"#FB923C",
             icon:<BrainCircuit size={14}/>
         },
         {
             label:"Enfoque",
-            value:91,
+            value: brainAnalysis.focus,
             color:"#38BDF8",
             icon:<Focus size={14}/>
         }
@@ -232,17 +233,19 @@ export default function HomeTodayV2(){
 
                             <div>
                                 <p className="
-                                text-white/60
-                                text-sm">
-                                    Hoy quiero ayudarte a
+                                mt-2
+                                text-xl
+                                font-semibold
+                                leading-normal">
+                                    Synapse ya analizó tu día
                                 </p>
 
                                 <h2 className="
-                                mt-2
-                                text-2xl
-                                font-semibold
-                                leading-normal">
-                                    {focusMessage[mood]}
+                                mt-4
+                                text-sm
+                                leading-relaxed
+                                text-white/80">
+                                    {brainInsight}
                                 </h2>
 
                             </div>

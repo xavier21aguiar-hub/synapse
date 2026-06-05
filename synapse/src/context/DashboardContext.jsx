@@ -406,22 +406,52 @@ const taskSummary = {
     completionRate
 }
 
-const today = new Date()
+const todayDate = new Date()
 .toISOString()
 .split("T")[0]
+
+const todayDay = new Date()
+.getDay()
+
 const completedHabitsToday = habitLogs.filter(
-    log => log.completed_date === today
+    log => log.completed_date === todayDate
 ).length
+
+const habitsForToday = habitsData.filter(
+    habit => {
+        if(
+            habit.frequency_type === "daily"
+        ){
+            return true
+        }
+
+        if(
+            habit.frequency_type === "weekly"
+        ){
+            return true
+        }
+
+        if(
+            habit.frequency_type === "custom"
+        ){
+            const days = JSON.parse(
+                habit.custom_days || "[]"
+            )
+            return days.includes(todayDay)
+        }
+        return false
+    }
+)
 
 const habitSummary = {
     completedToday: completedHabitsToday,
-    totalToday: habitsData.length,
-    completionRate: habitsData.length
+    totalToday: habitsForToday.length,
+    completionRate: habitsForToday.length
 
     ? Math.round(
         (
             completedHabitsToday /
-            habitsData.length
+            habitsForToday.length
         ) * 100
     )
     : 0
@@ -440,6 +470,96 @@ const financeSummary = {
     balance: 
     income - expenses
 }
+
+const todayEvents = events.filter(
+    event => event.event_date === todayDate
+)
+const todayReminders = reminders.filter(
+    reminder => reminder_date === todayDate
+)
+const pendingHabits = habitsForToday.filter(
+    habit => {
+        return !habitLogs.some(
+            log => 
+                log.habit_id === habit.id 
+                &&
+                log.completed_date === todayDate
+        )
+    }
+)
+const highPriorityTasks = dashboardPriorities.filter(
+    task => !task.completed &&
+    task.priority === "high"
+)
+
+const homeMessages = []
+if(
+    todayEvents.length > 0
+){
+    homeMessages.push(
+        `Tienes ${
+            todayEvents.length
+        } evento${
+            todayEvents.length > 1
+            ? "s"
+            : ""
+        } programado${
+            todayEvents.length > 1
+            ? "s"
+            : ""
+        } hoy.`
+    )
+}
+if(
+    pendingHabits.length > 0
+){
+    homeMessages.push(
+        `Aún faltan ${
+            pendingHabits.length
+        } hábito${
+            pendingHabits.length > 1
+            ? "s"
+            : ""
+        } por completar.`
+    )
+}
+if(
+    highPriorityTasks.length > 0
+){
+    homeMessages.push(
+        `Tienes ${
+            highPriorityTasks.length
+        } tarea${
+            highPriorityTasks.length > 1
+            ? "s"
+            : ""
+        } prioritaria${
+            highPriorityTasks.length > 1
+            ? "s"
+            : ""
+        } pendiente${
+            highPriorityTasks.length > 1
+            ? "s"
+            : ""
+        }.`
+    )
+}
+if(
+    todayReminders.length > 0
+){
+    homeMessages.push(
+        `Hay ${
+            todayReminders.length
+        } recordatorio${
+            todayReminders.length > 1
+            ? "s"
+            : ""
+        } para hoy.`
+    )
+}
+const homeInsight = homeMessages.length
+? homeMessages.join(" ")
+: "Tu día luce tranquilo."
 
 const addEvent = async(eventData) => {
     try{
@@ -585,7 +705,9 @@ return(
         addReminder,
         timelineItems,
         toggleEvent,
-        toggleReminder
+        toggleReminder,
+        habitsForToday,
+        homeInsight
     }}>
         {children}
     </DashboardContext.Provider>
