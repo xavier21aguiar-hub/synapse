@@ -1,14 +1,25 @@
 import SynapseCore from "../components/dashboard/synapse/SynapseCore"
 import { useDashboard } from "../context/DashboardContext"
 import { useMemo } from "react"
-import { Brain,Sparkles,Wallet,Target,Dumbbell,Battery,BrainCircuit,Focus,Heart } from "lucide-react"
+import { Brain,Sparkles,Wallet,Target,Dumbbell,Battery,BrainCircuit,Focus,Heart} from "lucide-react"
 import StatRing from "../components/home/StatRing"
 import { useNavigate } from "react-router-dom"
 import { useBrain } from "../context/BrainContext"
+import { getGreeting } from "../utils/getGreeting"
+import MobileCard from "../components/home/MobileCard"
+import NotificationCenter from "../components/home/NotificationCenter"
+import { buildOrbitCards } from "../data/orbitCards.jsx"
 
 export default function HomeTodayV2(){
+
+    const isMobile = window.innerWidth < 768
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1280
     
     const navigate = useNavigate()
+
+    const orbitSize = isTablet
+    ? "w-[650px] h-[650px]"
+    : "w-[850px] h-[850px]"
 
     const{
         mood,
@@ -24,18 +35,10 @@ export default function HomeTodayV2(){
         brainPrediction
     } = useBrain()
 
+    const greeting = getGreeting()
+
     const now = new Date()
     const hour = now.getHours()
-    
-    let greeting = "Buenas noches 🌙"
-    
-    if( hour >= 6 && hour < 12 ){
-        greeting = "Buenos días ☀️"
-    }
-    
-    if( hour >= 12 && hour < 19 ){
-        greeting = "Buenas tardes 🌤️"
-    }
     
     // Fecha actual en español
     const fechaFormato = useMemo(() => {
@@ -55,46 +58,13 @@ export default function HomeTodayV2(){
         })
     }, [])
 
-    const orbitCards=[
-        {
-            title: "Synapse piensa",
-            icon: <Brain size={40} strokeWidth={2.3} />,
-            content: brainInsight,
-            x:0,
-            y:-360
-        },
-        {
-            title:"Predicción",
-            icon: <Sparkles size={40} strokeWidth={2.3} />,
-            content: brainPrediction || "No hay suficientes datos todavía",
-            x:350,
-            y:-116
-        },
-        {
-            title:"Hábitos",
-            icon: <Dumbbell size={40} strokeWidth={2.3} />,
-            route:"/habits",
-            content: `${habitSummary.completedToday} de ${habitSummary.totalToday} hábitos completados`,
-            x:-290,
-            y:220
-        },
-        {
-            title:"Tareas",
-            icon: <Target size={40} strokeWidth={2.3} />,
-            route:"/tasks",
-            content: `${taskSummary.completedToday} de ${taskSummary.totalToday} tareas completadas`,
-            x:-340,
-            y:-130
-        },
-        {
-            title:"Finanzas",
-            icon: <Wallet size={40} strokeWidth={2.3} />,
-            route:"/finance",
-            content: `Balance actual: $${financeSummary.balance}`,
-            x:300,
-            y:220
-        }
-    ]
+    const orbitCards = buildOrbitCards({
+        brainInsight,
+        brainPrediction,
+        habitSummary,
+        taskSummary,
+        financeSummary
+    })
 
     const miniStats = [
         {
@@ -148,29 +118,32 @@ export default function HomeTodayV2(){
     ||
     moodUI.calm
 
-    const focusMessage = {
-        stressed: "reducir el estrés y recuperar energía",
-        fatigued: "descansar y recuperar enfoque",
-        energized: "aprovechar tu energía al máximo",
-        calm: "mantener estabilidad emocional"
-    }
-
     return(
         <div className="
         relative
         w-full
-        h-screen
+        min-h-screen
         overflow-hidden
         bg-slate-950
         text-white">
 
+            <NotificationCenter
+            isMobile={isMobile}
+            />
+
             {/* Left Panel */}
-            <div className="
-            absolute
-            left-24
-            top-24
+            <div className={`
             z-20
-            w-[320px]">
+            ${isMobile
+                ? `relative
+                w-full
+                px-6
+                pt-24`
+                : `absolute
+                left-24
+                top-24
+                w-[320px]`
+            }`}>
                 <div className="
                 flex
                 flex-col
@@ -262,10 +235,12 @@ export default function HomeTodayV2(){
             items-center
             justify-center">
 
+                {
+                !isMobile && (
+
                 <div className={`
                 relative
-                w-[850px]
-                h-[850px]
+                ${orbitSize}
                 rounded-full
                 border
                 ${currentUI.card}`}>
@@ -494,6 +469,62 @@ export default function HomeTodayV2(){
                     }
 
                 </div>
+                )
+                }
+
+                {
+                    isMobile && (
+                        <div className="
+                        mt-10
+                        grid
+                        grid-cols-1
+                        gap-4">
+                            {
+                                orbitCards.map(
+                                    (card,index) => (
+                                        <MobileCard
+                                        key={index}
+                                        card={card}/>
+                                    )
+                                )
+                            }
+                            {
+                                isMobile && (
+                                    <div className="
+                                    mt-4
+                                    grid
+                                    grid-cols-2
+                                    gap-3">
+                                        {
+                                            miniStats.map(
+                                                (stat,index) => (
+                                                    <div
+                                                    key={index}
+                                                    className="
+                                                    rounded-2xl
+                                                    bg-white/5
+                                                    p-4">
+                                                        <p className="
+                                                        text-xs
+                                                        text-white/50">
+                                                            {stat.label}
+                                                        </p>
+                                                        <p className="
+                                                        mt-1
+                                                        text-xl
+                                                        font-semibold">
+                                                            {stat.value}
+                                                        </p>
+                                                    </div>
+                                                )
+                                            )
+                                        }
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )
+                }
 
             </div>
 

@@ -7,6 +7,7 @@ import "./index.css"
 
 import { DashboardProvider } from "./context/DashboardContext"
 import { BrainProvider } from "./context/BrainContext"
+import { NotificationProvider } from "./context/NotificationContext"
 
 ReactDOM.createRoot( document.getElementById("root")
 ).render(
@@ -17,7 +18,11 @@ ReactDOM.createRoot( document.getElementById("root")
 
       <BrainProvider>
 
-        <App/>
+        <NotificationProvider>
+
+          <App/>
+
+        </NotificationProvider>
 
       </BrainProvider>
 

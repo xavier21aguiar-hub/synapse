@@ -2,7 +2,7 @@ import { createContext,useContext } from "react"
 import { useDashboard } from "./DashboardContext"
 import { Calculator } from "lucide-react"
 
-const BrainContext =createContext()
+const BrainContext = createContext()
 
 export function BrainProvider({
     children
