@@ -1,15 +1,13 @@
 import axios from "axios"
-
-const API = "http://127.0.0.1:8000"
+import { API_URL } from "../config/api"
 
 export const getPortfolioAssets =
 async() => {
 
     const response =
     await axios.get(
-        `${API}/portfolio-assets`
+        `${API_URL}/portfolio-assets`
     )
-
     return response.data
 }
 
@@ -18,9 +16,8 @@ async(asset) => {
 
     const response =
     await axios.post(
-        `${API}/portfolio-assets`,
+        `${API_URL}/portfolio-assets`,
         asset
     )
-
     return response.data
 }

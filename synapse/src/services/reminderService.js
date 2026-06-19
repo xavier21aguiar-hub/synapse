@@ -1,27 +1,22 @@
 import axios from "axios"
-
-const API = "http://127.0.0.1:8000"
-
+import { API_URL } from "../config/api"
 
 export const getReminders = async() => {
 
     const response =
     await axios.get(
-        `${API}/reminders`
+        `${API_URL}/reminders`
     )
-
     return response.data
 }
-
 
 export const createReminder = async(reminder) => {
 
     const response =
     await axios.post(
-        `${API}/reminders`,
+        `${API_URL}/reminders`,
         reminder
     )
-
     return response.data
 }
 
@@ -29,8 +24,7 @@ export const updateReminder = async(id)=>{
 
     const response =
     await axios.patch(
-        `${API}/reminders/${id}`
+        `${API_URL}/reminders/${id}`
     )
-
     return response.data
 }

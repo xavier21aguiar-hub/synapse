@@ -1,36 +1,34 @@
 import axios from "axios"
-
-const API="http://127.0.0.1:8000"
+import { API_URL } from "../config/api"
 
 
 export const getTasks=async()=>{
     
-    const response= await axios.get( `${API}/tasks` )
-    
+    const response= await axios.get( 
+        `${API_URL}/tasks` 
+    )
     return response.data
 }
 
 export const createTask=async(task)=>{
     
-    const response= await axios.post(
-        
-        `${API}/tasks`,
+    const response= await axios.post( 
+        `${API_URL}/tasks`,
         task
     ) 
-    
     return response.data
 }
 
 export const updateTask=async(id)=>{
     const response=await axios.patch(
-        `${API}/tasks/${id}`
+        `${API_URL}/tasks/${id}`
     )
     return response.data
 }
 
 export const deleteTask=async(id)=>{
     const response=await axios.delete(
-        `${API}/tasks/${id}`
+        `${API_URL}/tasks/${id}`
     )
     return response.data
 }

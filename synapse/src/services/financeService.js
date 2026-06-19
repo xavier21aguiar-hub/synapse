@@ -1,14 +1,12 @@
 import axios from "axios"
-
-const API = "http://127.0.0.1:8000"
+import { API_URL } from "../config/api"
 
 export const getTransactions = async() => {
 
     const response =
     await axios.get(
-        `${API}/transactions`
+        `${API_URL}/transactions`
     )
-
     return response.data
 }
 
@@ -18,9 +16,8 @@ export const saveTransaction = async(
 
     const response =
     await axios.post(
-        `${API}/transactions`,
+        `${API_URL}/transactions`,
         transaction
     )
-
     return response.data
 }

@@ -1,15 +1,13 @@
 import axios from "axios"
-
-const API = "http://127.0.0.1:8000"
+import { API_URL } from "../config/api"
 
 export const getHabits =
 async() => {
 
     const response =
     await axios.get(
-        `${API}/habits`
+        `${API_URL}/habits`
     )
-
     return response.data
 }
 
@@ -18,10 +16,9 @@ async(habit) => {
 
     const response =
     await axios.post(
-        `${API}/habits`,
+        `${API_URL}/habits`,
         habit
     )
-
     return response.data
 }
 
@@ -30,8 +27,7 @@ async(id) => {
 
     const response =
     await axios.delete(
-        `${API}/habits/${id}`
+        `${API_URL}/habits/${id}`
     )
-
     return response.data
 }

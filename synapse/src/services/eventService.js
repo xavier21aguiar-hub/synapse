@@ -1,27 +1,22 @@
 import axios from "axios"
-
-const API = "http://127.0.0.1:8000"
-
+import { API_URL } from "../config/api"
 
 export const getEvents = async() => {
 
     const response =
     await axios.get(
-        `${API}/events`
+        `${API_URL}/events`
     )
-
     return response.data
 }
-
 
 export const createEvent = async(event) => {
 
     const response =
     await axios.post(
-        `${API}/events`,
+        `${API_URL}/events`,
         event
     )
-
     return response.data
 }
 
@@ -29,8 +24,7 @@ export const updateEvent = async(id)=>{
 
     const response =
     await axios.patch(
-        `${API}/events/${id}`
+        `${API_URL}/events/${id}`
     )
-
     return response.data
 }

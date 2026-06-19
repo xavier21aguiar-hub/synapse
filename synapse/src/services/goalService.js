@@ -1,11 +1,10 @@
 import axios from "axios"
-
-const API = "http://127.0.0.1:8000"
+import { API_URL } from "../config/api"
 
 export const getGoals = async() => {
     const response =
     await axios.get(
-        `${API}/financial-goals`
+        `${API_URL}/financial-goals`
     )
     return response.data
 }
@@ -15,7 +14,7 @@ export const saveGoal = async(
 ) => {
     const response =
     await axios.post(
-        `${API}/financial-goals`,
+        `${API_URL}/financial-goals`,
         goal
     )
     return response.data

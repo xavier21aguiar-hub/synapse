@@ -25,7 +25,11 @@ Base.metadata.create_all(
     bind = engine
 )
 
-origins=["http://localhost:5173"]
+origins=[
+    "http://localhost:5173"
+    "http://localhost:4173"
+    "https://synapse-theta-rust.vercel.app"
+]
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,10 +1,9 @@
 import axios from "axios"
-
-const API = "http://127.0.0.1:8000"
+import { API_URL } from "../config/api"
 
 export const saveHistory = async(task) => {
     await axios.post(
-        `${API}/history`,
+        `${API_URL}/history`,
         {
             text: task.text
         }
@@ -13,7 +12,7 @@ export const saveHistory = async(task) => {
 
 export const getHistory = async() => {
     const response = await axios.get(
-        `${API}/history`
+        `${API_URL}/history`
     )
     return response.data
 }
