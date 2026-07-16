@@ -21,19 +21,27 @@ from app.routes.reminder import router as reminder_router
 
 app = FastAPI()
 
+@app.get("/")
+def root():
+    return {
+        "status": "ok",
+        "message": "Synapse API is running"
+    }
+
 Base.metadata.create_all(
     bind = engine
 )
 
-origins=[
-    "http://localhost:5173"
-    "http://localhost:4173"
+origins = [
+    "http://localhost:5173",
+    "http://localhost:4173",
     "https://synapse-theta-rust.vercel.app"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
