@@ -1,22 +1,17 @@
-import axios from "axios"
-import { API_URL } from "../config/api"
+import apiClient from "../config/apiClient"
 
-export const getPortfolioAssets =
-async() => {
+export const getPortfolioAssets = async() => {
 
-    const response =
-    await axios.get(
-        `${API_URL}/portfolio-assets`
+    const response = await apiClient.get(
+        "/portfolio-assets"
     )
     return response.data
 }
 
-export const savePortfolioAsset =
-async(asset) => {
+export const savePortfolioAsset = async(asset) => {
 
-    const response =
-    await axios.post(
-        `${API_URL}/portfolio-assets`,
+    const response = await apiClient.post(
+        "/portfolio-assets",
         asset
     )
     return response.data

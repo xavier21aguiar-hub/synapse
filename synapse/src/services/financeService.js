@@ -1,22 +1,17 @@
-import axios from "axios"
-import { API_URL } from "../config/api"
+import apiClient from "../config/apiClient"
 
 export const getTransactions = async() => {
 
-    const response =
-    await axios.get(
-        `${API_URL}/transactions`
+    const response = await apiClient.get(
+        "/transactions"
     )
     return response.data
 }
 
-export const saveTransaction = async(
-    transaction
-) => {
+export const saveTransaction = async(transaction) => {
 
-    const response =
-    await axios.post(
-        `${API_URL}/transactions`,
+    const response = await apiClient.post(
+        "/transactions",
         transaction
     )
     return response.data

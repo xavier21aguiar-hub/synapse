@@ -1,30 +1,26 @@
-import axios from "axios"
-import { API_URL } from "../config/api"
+import apiClient from "../config/apiClient"
 
 export const getEvents = async() => {
 
-    const response =
-    await axios.get(
-        `${API_URL}/events`
+    const response = await apiClient.get(
+        "/events"
     )
     return response.data
 }
 
 export const createEvent = async(event) => {
 
-    const response =
-    await axios.post(
-        `${API_URL}/events`,
+    const response = await apiClient.post(
+        "/events",
         event
     )
     return response.data
 }
 
-export const updateEvent = async(id)=>{
+export const updateEvent = async(id) => {
 
-    const response =
-    await axios.patch(
-        `${API_URL}/events/${id}`
+    const response = await apiClient.patch(
+        `/events/${id}`
     )
     return response.data
 }

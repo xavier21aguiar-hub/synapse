@@ -1,18 +1,20 @@
-import axios from "axios"
-import { API_URL } from "../config/api"
+import apiClient from "../config/apiClient"
 
 export const saveHistory = async(task) => {
-    await axios.post(
-        `${API_URL}/history`,
+
+    const response = await apiClient.post(
+        "/history",
         {
             text: task.text
         }
     )
+    return response.data
 }
 
 export const getHistory = async() => {
-    const response = await axios.get(
-        `${API_URL}/history`
+
+    const response = await apiClient.get(
+        "/history"
     )
     return response.data
 }

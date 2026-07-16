@@ -1,34 +1,34 @@
-import axios from "axios"
-import { API_URL } from "../config/api"
-
+import apiClient from "../config/apiClient"
 
 export const getTasks=async()=>{
     
-    const response= await axios.get( 
-        `${API_URL}/tasks` 
+    const response = await apiClient.get(
+        "/tasks"
     )
     return response.data
 }
 
-export const createTask=async(task)=>{
-    
-    const response= await axios.post( 
-        `${API_URL}/tasks`,
+export const createTask = async(task) => {
+
+    const response = await apiClient.post(
+        "/tasks",
         task
-    ) 
-    return response.data
-}
-
-export const updateTask=async(id)=>{
-    const response=await axios.patch(
-        `${API_URL}/tasks/${id}`
     )
     return response.data
 }
 
-export const deleteTask=async(id)=>{
-    const response=await axios.delete(
-        `${API_URL}/tasks/${id}`
+export const updateTask = async(id) => {
+
+    const response = await apiClient.patch(
+        `/tasks/${id}`
+    )
+    return response.data
+}
+
+export const deleteTask = async(id) => {
+
+    const response = await apiClient.delete(
+        `/tasks/${id}`
     )
     return response.data
 }

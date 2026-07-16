@@ -1,22 +1,17 @@
-import axios from "axios"
-import { API_URL } from "../config/api"
+import apiClient from "../config/apiClient"
 
-export const getHabitLogs =
-async() => {
+export const getHabitLogs = async() => {
 
-    const response =
-    await axios.get(
-        `${API_URL}/habit-logs`
+    const response = await apiClient.get(
+        "/habit-logs"
     )
     return response.data
 }
 
-export const saveHabitLog =
-async(log) => {
+export const saveHabitLog = async(log) => {
 
-    const response =
-    await axios.post(
-        `${API_URL}/habit-logs`,
+    const response = await apiClient.post(
+        "/habit-logs",
         log
     )
     return response.data

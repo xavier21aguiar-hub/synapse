@@ -1,30 +1,26 @@
-import axios from "axios"
-import { API_URL } from "../config/api"
+import apiClient from "../config/apiClient"
 
 export const getReminders = async() => {
 
-    const response =
-    await axios.get(
-        `${API_URL}/reminders`
+    const response = await apiClient.get(
+        "/reminders"
     )
     return response.data
 }
 
 export const createReminder = async(reminder) => {
 
-    const response =
-    await axios.post(
-        `${API_URL}/reminders`,
+    const response = await apiClient.post(
+        "/reminders",
         reminder
     )
     return response.data
 }
 
-export const updateReminder = async(id)=>{
+export const updateReminder = async(id) => {
 
-    const response =
-    await axios.patch(
-        `${API_URL}/reminders/${id}`
+    const response = await apiClient.patch(
+        `/reminders/${id}`
     )
     return response.data
 }
